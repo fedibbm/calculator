@@ -1,2 +1,16 @@
-# calculator
-Teacher asked for a simple calculator, I did a little bit more than simple :).
+# Calculator
+
+Prof asked for a simple calculator, I did just a little bit more.
+
+
+## Demo
+
+You can try out the calculator here:  
+[**Live Demo on GitHub Pages**](https://fedibbm.github.io/calculator)
+
+
+## Tech
+
+- **HTML5**
+- **CSS3** 
+- **JavaScript** 
