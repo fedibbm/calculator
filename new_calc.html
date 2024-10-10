@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Calculator</title>
+        <link rel="stylesheet" href="./new_calc_styles.css" />
+    </head>
+    <body>
+        <div class="calculator">
+            <input class="result_display" id="formula" readonly />
+            <button class="delete" onclick="clearAll()">Clear All</button>
+            <button onclick="onButtonClick('/',this)">/</button>
+            <button onclick="onButtonClick('1', this)">1</button>
+            <button onclick="onButtonClick('2', this)">2</button>
+            <button onclick="onButtonClick('3', this)">3</button>
+            <button onclick="onButtonClick('*', this)">*</button>
+            <button onclick="onButtonClick('4', this)">4</button>
+            <button onclick="onButtonClick('5', this)">5</button>
+            <button onclick="onButtonClick('6', this)">6</button>
+            <button onclick="onButtonClick('-', this)">-</button>
+            <button onclick="onButtonClick('7', this)">7</button>
+            <button onclick="onButtonClick('8', this)">8</button>
+            <button onclick="onButtonClick('9', this)">9</button>
+            <button onclick="onButtonClick('+', this)">+</button>
+            <button class="zero" onclick="onButtonClick('0', this)">0</button>
+            <button class="equals" onclick="calculateResult()">=</button>
+        </div>
+
+        <script>
+            var operators = "+-*/";
+            var formulaElement = document.getElementById("formula");
+            var lastResultDisplayed = false;
+
+            function errorEffect(){
+                    let opacity = 0.5;
+                    let interval = setInterval(()=>{
+                        opacity -= 0.1;
+                        document.body.style.background=`rgba(255,0,0,${opacity})`;
+                        if (opacity<=0){
+                            document.body.style.background="white";
+                            clearInterval(interval);
+                        }
+                    },50);
+                }
+
+            function onButtonClick(value, e) {
+                const rect = e.getBoundingClientRect();
+                const yCoordinate =
+                    (rect.top + rect.bottom) / 2 + window.scrollY;
+                const xCoordinate =
+                    (rect.left + rect.right) / 2 + window.scrollX;
+                const txt = e.innerText;
+                run(yCoordinate, xCoordinate, txt);
+                if (lastResultDisplayed) {
+                    if (operators.includes(value)) {
+                        // If the new input is an operator, keep the previous result
+                        lastResultDisplayed = false;
+                    } else {
+                        // If the new input is a number, start a new calculation
+                        formulaElement.value = "";
+                        lastResultDisplayed = false;
+                    }
+                }
+
+                formulaElement.value += value;
+            }
+
+            function calculateResult() {
+                var expression = formulaElement.value;
+                if (
+                    operators.includes(expression.charAt(expression.length - 1))
+                ) {
+                    return; // Prevent calculation if the last character is an operator
+                }
+
+                try {
+                    var result = Function(
+                        '"use strict";return (' + expression + ")"
+                    )();
+                    formulaElement.value = result;
+                    lastResultDisplayed = true;
+                } catch (error) {
+                    errorEffect();
+                    formulaElement.value = "Error";
+                }
+            }
+
+            function clearAll() {
+                formulaElement.value = "";
+                lastResultDisplayed = false;
+            }
+            function run(y, x, txt) {
+                const runner = document.createElement("div");
+                runner.style.position = "fixed";
+                runner.style.left = "50%";
+                runner.style.top = y + "px";
+                runner.style.transform = "translate(-50%, -50%)";
+                runner.innerText = txt;
+                runner.style.color = getRandomElement([
+                    "#4158D0",
+                    "#C850C0",
+                    "#FFCC70",
+                ]);
+                runner.style.fontSize = "90px";
+                runner.style.fontWeight = "bold";
+                document.body.appendChild(runner);
+
+                let position = 0;
+                let speed = 20;
+                let direction = window.innerWidth / 2 - x > 0 ? -1 : 1;
+
+                const interval = setInterval(() => {
+                    position += speed * direction;
+                    runner.style.left = `calc(50% + ${position}px)`;
+                    if (
+                        position < -window.innerWidth / 2 ||
+                        position > window.innerWidth / 2
+                    ) {
+                        clearInterval(interval);
+                        runner.remove();
+                    }
+                }, 10);
+
+                function getRandomElement(arr) {
+                    const randomIndex = Math.floor(Math.random() * arr.length);
+                    return arr[randomIndex];
+                }
+               
+            }
+        </script>
+    </body>
+</html>
